@@ -13,33 +13,46 @@ public class MemoryScheduler {
         return result + " ]";
     }
 
-    private static int findFreeBlock(int size) {
-
-        System.out.println(print());
-        memoryBlocks.sort(MemoryBlock.byEnd);
-        System.out.println(print());
-        ArrayList<MemoryBlock> tempMemoryBlocks = new ArrayList<>();
-        for (int i = 0; i < memoryBlocks.size() - 1; i++) {
-            if (memoryBlocks.get(i + 1).start - memoryBlocks.get(i).end > size) {
-                MemoryBlock tempMemoryBlock = new MemoryBlock(memoryBlocks.get(i).end, memoryBlocks.get(i + 1).start);
-                tempMemoryBlocks.add(tempMemoryBlock);
-                System.out.println(tempMemoryBlock);
+    static boolean findFreeBlock(int size, Process process) {
+        boolean check = false;
+        if (Configuration.memoryVolume - memoryBlocks.get(memoryBlocks.size() - 1).end + size <= 0) {
+            process.setMemoryBlock(new MemoryBlock(memoryBlocks.get(memoryBlocks.size() - 1).end + 1, memoryBlocks.get(memoryBlocks.size() - 1).end + size + 1));
+            memoryBlocks.add(process.getMemoryBlock());
+            check = true;
+        } else {
+            memoryBlocks.sort(MemoryBlock.byEnd);
+            ArrayList<MemoryBlock> tempMemoryBlocks = new ArrayList<>();
+            for (int i = 0; i < memoryBlocks.size() - 1; i++) {
+                if (memoryBlocks.get(i + 1).start - memoryBlocks.get(i).end > size) {
+                    MemoryBlock tempMemoryBlock = new MemoryBlock(memoryBlocks.get(i).end, memoryBlocks.get(i + 1).start);
+                    tempMemoryBlocks.add(tempMemoryBlock);
+                }
+            }
+            if (!tempMemoryBlocks.isEmpty()) {
+                memoryBlocks.add(new MemoryBlock(tempMemoryBlocks.get(0).start, size));
+                check = true;
             }
         }
-
-        return 0;
+        return check;
     }
 
-    public static boolean fillMemoryBlock(int size) {
-        findFreeBlock(size);
-        return false;
-    }
-
-    public void releaseMemoryBlock(MemoryBlock memoryBlock) {
+    public static void releaseMemoryBlock(MemoryBlock memoryBlock) {
         memoryBlocks.remove(memoryBlock);
     }
 
-    public static void add(MemoryBlock memoryBlock) {
-        memoryBlocks.add(memoryBlock);
+    public static boolean add(int size, Process process) {
+        boolean check = false;
+        if (!memoryBlocks.isEmpty()) {
+            if (memoryBlocks.get(memoryBlocks.size() - 1).end + size <= Configuration.memoryVolume) {
+                process.setMemoryBlock(new MemoryBlock(memoryBlocks.get(memoryBlocks.size() - 1).end + 1, memoryBlocks.get(memoryBlocks.size() - 1).end + size + 1));
+                memoryBlocks.add(process.getMemoryBlock());
+                check = true;
+            }
+        } else {
+            process.setMemoryBlock(new MemoryBlock(Configuration.OSMemoryVolume + 1, Configuration.OSMemoryVolume + size + 1));
+            memoryBlocks.add(process.getMemoryBlock());
+            check = true;
+        }
+        return check;
     }
 }

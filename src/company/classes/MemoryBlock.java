@@ -6,16 +6,13 @@ public class MemoryBlock {
     int start;
     int end;
 
-    public static Comparator <MemoryBlock> byEnd = new Comparator<MemoryBlock>() {
-        @Override
-        public int compare(MemoryBlock o1, MemoryBlock o2) {
-            return o2.end - o1.end;
-        }
-    };
+    static Comparator <MemoryBlock> byEnd = Comparator.comparingInt(o -> o.end);
 
-    public MemoryBlock (int start, int end){
-        this.start = start;
-        this.end = end;
+    MemoryBlock(int start, int end){
+        if(start > Configuration.OSMemoryVolume) {
+            this.start = start;
+            this.end = end;
+        }
     }
 
     @Override

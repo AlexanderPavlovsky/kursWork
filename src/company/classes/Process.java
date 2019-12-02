@@ -1,38 +1,15 @@
 package company.classes;
 
 public class Process {
-    int id;
-    String name;
-    int priority;
-    int time;
-    int memory;
-    int timeIn;
-    int burstTime;
-    State state;
-
-    public Process (int id) {
-        this.id = id;
-        this.memory = Utils.getRandomInteger(10, Configuration.memoryVolume / 2);
-        this.priority = Utils.getRandomInteger(Configuration.maxPriority);
-        this.time = Utils.getRandomInteger(10, 100);
-        this.timeIn = ClockGenerator.getTime();
-        this.burstTime = 0;
-        this.name = "P" + this.id;
-        this.state = State.Ready;
-    }
-
-    @Override
-    public String toString() {
-        return id +
-                "{ name='" + name + '\'' +
-                ", priority=" + priority +
-                ", time=" + time +
-                ", memory=" + memory +
-                ", timeIn=" + timeIn +
-                ", burstTime=" + burstTime +
-                ", state=" + state +
-                '}';
-    }
+    private int id;
+    private String name;
+    private int priority;
+    private int time;
+    private int memory;
+    private int timeIn;
+    private int burstTime;
+    private State state;
+    private MemoryBlock memoryBlock;
 
     public void setPriority(int priority) {
         this.priority = priority;
@@ -54,7 +31,7 @@ public class Process {
         return name;
     }
 
-    public int getPriority() {
+    int getPriority() {
         return priority;
     }
 
@@ -76,6 +53,39 @@ public class Process {
 
     public State getState() {
         return state;
+    }
+
+    public MemoryBlock getMemoryBlock() {
+        return memoryBlock;
+    }
+
+    public void setMemoryBlock(MemoryBlock memoryBlock) {
+        this.memoryBlock = memoryBlock;
+    }
+
+    Process(int id) {
+        this.id = id;
+        this.memory = Utils.getRandomInteger(Configuration.OSMemoryVolume + 1, Configuration.memoryVolume / 2);
+        this.priority = Utils.getRandomInteger(1, Configuration.maxPriority);
+        this.time = Utils.getRandomInteger(10, 100);
+        this.timeIn = ClockGenerator.getTime();
+        this.burstTime = 0;
+        this.name = "P" + this.id;
+        this.state = State.Ready;
+    }
+
+    @Override
+    public String toString() {
+        return id +
+                "{ name='" + name + '\'' +
+                ", priority=" + priority +
+                ", time=" + time +
+                ", memory=" + memory +
+                ", timeIn=" + timeIn +
+                ", burstTime=" + burstTime +
+                ", state=" + state +
+                ", MemoryBlock=" + memoryBlock +
+                '}';
     }
 }
 
